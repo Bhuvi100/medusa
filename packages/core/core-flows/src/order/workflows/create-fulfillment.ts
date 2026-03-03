@@ -563,12 +563,14 @@ export const createOrderFulfillmentWorkflow = createWorkflow(
       prepareInventoryUpdate
     )
 
+    parallelize(
+      updateReservationsStep(toUpdate),
+      deleteReservationsStep(toDelete)
+    )
     adjustInventoryLevelsStep(inventoryAdjustment)
     parallelize(
       registerOrderFulfillmentStep(registerOrderFulfillmentData),
       createRemoteLinkStep(link),
-      updateReservationsStep(toUpdate),
-      deleteReservationsStep(toDelete),
       emitEventStep({
         eventName: OrderWorkflowEvents.FULFILLMENT_CREATED,
         data: {
